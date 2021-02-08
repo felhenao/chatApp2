@@ -13,15 +13,17 @@ const publicDirectoryPath = path.join(__dirname, '../public' )
 app.use(express.static(publicDirectoryPath))
 
 io.on('connection', (socket) => {
-    socket.emit('message', 'Welcome')//emists to single client when new client connects 
+    socket.emit('message', 'Welcome')//emits to single client when new client connects 
     socket.broadcast.emit('message', 'A new user has joined')//emits to all (except current) clients
 
-    socket.on('sendMessage', (message) => {
+    socket.on('sendMessage', (message, callback) => {
         io.emit('message', message)  //emit to all clients
+        callback('Delivered')
     })
 
-    socket.on('sendLocation', (coords) => {
+    socket.on('sendLocation', (coords, callback) => {
         io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+        callback()
     })
 
     socket.on('disconnect', () => {
