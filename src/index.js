@@ -2,7 +2,7 @@ const path = require('path')
 const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
-const { generateMessage } = require('./utils/messages')
+const { generateMessage, generateLocationMessage } = require('./utils/messages')
 
 const app = express()
 const server = http.createServer(app)
@@ -14,6 +14,7 @@ const publicDirectoryPath = path.join(__dirname, '../public' )
 app.use(express.static(publicDirectoryPath))
 
 io.on('connection', (socket) => {
+    
     socket.emit('message', generateMessage('Welcome!'))//emits to single client when new client connects 
     socket.broadcast.emit('message', generateMessage('A new user has joined'))//emits to all (except current) clients
 
@@ -23,7 +24,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('sendLocation', (coords, callback) => {
-        io.emit('locationMessage', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+        io.emit('locationMessage', generateLocationMessage(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`) )
         callback()
     })
 
